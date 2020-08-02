@@ -13,11 +13,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.*;
 
 @Service
 @Slf4j
-public class GoogleKickstartService {
+public class GoogleKickStartService {
 
     private static final String BASE_URL = "https://codejam.googleapis.com";
 
@@ -25,7 +26,7 @@ public class GoogleKickstartService {
     private final WebClient  webClient;
     private final CacheManager cacheManager;
 
-    public GoogleKickstartService(ObjectMapper objectMapper, RestTemplateBuilder restTemplateBuilder, CacheManager cacheManager) {
+    public GoogleKickStartService(ObjectMapper objectMapper, RestTemplateBuilder restTemplateBuilder, CacheManager cacheManager) {
         this.objectMapper = objectMapper;
         this.cacheManager = cacheManager;
         this.webClient = WebClient
@@ -35,33 +36,41 @@ public class GoogleKickstartService {
     }
 
     /**
-     * Get challenge ids where user participated
+     * Get profile data with scores
      * @param nickname
-     * @return Set of challenge ids where user participated
+     * @return profile
      * @throws IOException
      */
-    @Cacheable("GoogleKickstartService.getChallenges")
-    public Set<String> getChallenges(final String nickname) throws IOException {
-        val now = Instant.now().getEpochSecond() * 1000;
-
+    @Cacheable("GoogleKickstartService.getProfile")
+    public Profile getProfile(final String nickname) throws IOException {
         var requestSpec = webClient.get().uri(uriBuilder -> uriBuilder
                 .path("/ranks")
-                .queryParam("p", Base64Utils.encodeToString(String.format("{\"nickname\":\"%s\"}", nickname).getBytes()))
+                .queryParam("p", encodeJsonParameter("{\"nickname\":\"%s\"}", nickname))
                 .build());
 
-        var body = objectMapper.readTree(Base64Utils.decodeFromString(requestSpec.retrieve().bodyToMono(String.class).block()));
+        val body = objectMapper.readTree(Base64Utils.decodeFromString(requestSpec.retrieve().bodyToMono(String.class).block()));
 
-        val kickstartChallengeIds = IteratorToStream(body.get("adventures").elements())
+        val country = (!body.get("scores").isEmpty()) ? body.get("scores").get(0).get("score").get("country").asText() : null;
+
+        final Map<String, Long> timestampMap = iteratorToStream(body.get("adventures").elements())
                 .filter(a -> a.get("title").asText().startsWith("Kick Start"))
-                .flatMap(a -> IteratorToStream(a.get("challenges").elements())
-                        .filter(c -> c.get("end_ms").asLong() <= now)
-                        .map(c -> c.get("id").asText()))
-                .collect(Collectors.toSet());
+                .flatMap(a -> iteratorToStream(a.get("challenges").elements()))
+                .collect(Collectors.toMap(c -> c.get("id").asText(), c -> c.get("end_ms").asLong()));
 
-        return IteratorToStream(body.get("scores").elements())
-                .map(s -> s.get("challenge_id").asText())
-                .filter(cid -> kickstartChallengeIds.contains(cid))
-                .collect(Collectors.toSet());
+        val scores = iteratorToStream(body.get("scores").elements())
+                .filter(s -> timestampMap.containsKey(s.get("challenge_id").asText()))
+                .map(s -> new Score(){{
+                    setChallengeId(s.get("challenge_id").asText());
+                    setScore(s.get("score").get("score_1").asInt());
+                    setTimestamp(timestampMap.get(s.get("challenge_id").asText()));
+                }})
+                .collect(Collectors.toList());
+
+        return new Profile(){{
+            setNickname(nickname);
+            setCountry(country);
+            setScores(scores);
+        }};
     }
 
     /**
@@ -75,13 +84,13 @@ public class GoogleKickstartService {
     public ChallengeResult getResults(final String challengeId, final String nickname) throws IOException {
         var requestSpec = webClient.get().uri(uriBuilder -> uriBuilder
                 .path("/scoreboard/{challengeId}/find")
-                .queryParam("p", Base64Utils.encodeToString(String.format("{\"nickname\":\"%s\",\"scoreboard_page_size\":1}", nickname).getBytes()))
+                .queryParam("p", encodeJsonParameter("{\"nickname\":\"%s\",\"scoreboard_page_size\":1}", nickname))
                 .build(challengeId));
 
-        var body = objectMapper.readTree(Base64Utils.decodeFromString(requestSpec.retrieve().bodyToMono(String.class).block()));
+        val body = objectMapper.readTree(Base64Utils.decodeFromString(requestSpec.retrieve().bodyToMono(String.class).block()));
 
         val rank = body.get("scoreboard_page_number").asInt();
-        val rankRelative = (double)rank / body.get("full_scoreboard_size").asDouble() * 100.0;
+        val rankRelative = (1.0 - (double)rank / body.get("full_scoreboard_size").asDouble()) * 100.0;
         val timestamp = body.get("challenge").get("end_ms").asLong();
 
         return new ChallengeResult(){{
@@ -101,18 +110,18 @@ public class GoogleKickstartService {
     public List<Competition> getCompetitions() throws IOException {
         var requestSpec = webClient.get().uri(uriBuilder -> uriBuilder
                 .path("/poll")
-                .queryParam("p", "e30")
+                .queryParam("p", encodeJsonParameter("{}"))
                 .build());
 
-        var body = objectMapper.readTree(Base64Utils.decodeFromString(requestSpec.retrieve().bodyToMono(String.class).block()));
+        val body = objectMapper.readTree(Base64Utils.decodeFromString(requestSpec.retrieve().bodyToMono(String.class).block()));
 
-        return IteratorToStream(body.get("adventures").elements())
+        return iteratorToStream(body.get("adventures").elements())
                 .filter(a -> a.get("competition__str").asText().equals("KICK_START") && !a.get("challenges").isEmpty())
                 .map(a -> new Competition(){{
                     setId(a.get("id").asText());
                     setTitle(a.get("title").asText());
                     setTimestamp(a.get("reg_end_ms").asLong());
-                    setChallenges(IteratorToStream(a.get("challenges").elements())
+                    setChallenges(iteratorToStream(a.get("challenges").elements())
                             .map(c -> new Challenge(){{
                                 setId(c.get("id").asText());
                                 setTitle(c.get("title").asText());
@@ -123,8 +132,12 @@ public class GoogleKickstartService {
                 .collect(Collectors.toList());
     }
 
-    private static <T extends Object> Stream<T> IteratorToStream(Iterator<T> it) {
+    private static <T extends Object> Stream<T> iteratorToStream(Iterator<T> it) {
         return StreamSupport.stream(
                 Spliterators.spliteratorUnknownSize(it, Spliterator.ORDERED), false);
+    }
+
+    private static String encodeJsonParameter(String json, Object... params) {
+        return Base64Utils.encodeToString(String.format(json, params).getBytes());
     }
 }

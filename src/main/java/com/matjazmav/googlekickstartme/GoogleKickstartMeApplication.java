@@ -1,7 +1,6 @@
 package com.matjazmav.googlekickstartme;
 
-import com.matjazmav.googlekickstartme.service.GoogleKickstartService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.matjazmav.googlekickstartme.service.GoogleKickStartService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cache.CacheManager;
@@ -16,10 +15,10 @@ import java.io.IOException;
 @SpringBootApplication
 public class GoogleKickstartMeApplication {
 
-	private final GoogleKickstartService gkss;
+	private final GoogleKickStartService gkss;
 	private final CacheManager cacheManager;
 
-	public GoogleKickstartMeApplication(CacheManager cacheManager, GoogleKickstartService gkss) {
+	public GoogleKickstartMeApplication(CacheManager cacheManager, GoogleKickStartService gkss) {
 		this.gkss = gkss;
 		this.cacheManager = cacheManager;
 	}
