@@ -32,6 +32,7 @@ public class SeleniumWebDriverConfig {
 
         val chromeOptions = new ChromeOptions();
         chromeOptions.addArguments("--window-size=300,300");
+        chromeOptions.addArguments("--headless");
         chromeOptions.setBinary(chromePath);
 
         val webDriver = new ChromeDriver(chromeOptions);

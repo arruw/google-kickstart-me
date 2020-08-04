@@ -1,9 +1,15 @@
 # Google Kick Start Me
 Embeddable Google Kick Start Badge
 
-![badge](demo.png "Badge Example")
+<img alt="Google Kick Start Badge" decoding=async crossorigin=anonymous src="https://google-kickstart-me.herokuapp.com/flier/matjazmav/thumbnail?ppl=JAVA" />
 
-Demo badge example: [here](https://google-kickstart-me.herokuapp.com/flier/matjazmav?ppl=JAVA&link=https://www.linkedin.com/in/matjazmav/)
+```html
+<img
+    alt="Google Kick Start Badge"
+    decoding=async
+    crossorigin=anonymous
+    src="https://google-kickstart-me.herokuapp.com/flier/<nickname>/thumbnail?ppl=<ppl>" />
+```
 
 ### Usage
 TODO
