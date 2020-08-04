@@ -6,25 +6,27 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 
 import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class SeleniumWebDriverConfig {
 
-    @Value("${chromePath}")
+    @Value("${selenium.chrome.path}")
     private String chromePath;
 
-    @Value("${chromeDriverPath}")
+    @Value("${selenium.chrome.driver.path}")
     private String chromeDriverPath;
 
     @Bean
-    @Primary
+    @Scope(value = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public WebDriver webDriver() {
         System.setProperty("webdriver.chrome.driver", chromeDriverPath);
 

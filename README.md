@@ -25,3 +25,11 @@ TODO
 
 ### Story behind the project
 TODO
+
+### Deployment notes
+
+#### Configurations
+```
+SELENIUM_CHROME_PATH=<todo>
+SELENIUM_CHROME_DRIVER_PATH=<todo>
+```
