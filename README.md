@@ -48,7 +48,7 @@ typescript
 ```
 
 ### Contributing
-You are must welcome to submit a pull request of any kind (bug fixes, better UI design, 
+You are most welcome to submit a pull request of any kind (bug fixes, better UI design, 
 optimization, additional tests, refactoring,
 add support for additional programming language, new feature...)
 
