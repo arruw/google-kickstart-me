@@ -13,7 +13,6 @@ import java.util.concurrent.TimeUnit;
 public class CaffeineCacheConfig {
 
     @Bean
-    @Primary
     public CacheManager cacheManager() {
         return new CaffeineCacheManager(){{
             setCaffeine(Caffeine.newBuilder()
