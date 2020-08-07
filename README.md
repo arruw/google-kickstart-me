@@ -29,7 +29,7 @@ https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>[/thumbnail
 
 Supported `<language>` values:
 ```
-linux
+bash
 c
 cplusplus
 csharp
