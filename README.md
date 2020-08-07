@@ -1,30 +1,47 @@
 # Google Kick Start Me
 Embeddable Google Kick Start Badge
 
-<img alt="Google Kick Start Badge" decoding=async crossorigin=anonymous src="https://google-kickstart-me.herokuapp.com/flier/matjazmav/thumbnail?ppl=JAVA" />
+<img alt="Google Kick Start Badge" decoding=async crossorigin=anonymous src="https://google-kickstart-me.herokuapp.com/flier/matjazmav/java/thumbnail" />
 
 ```html
 <img
     alt="Google Kick Start Badge"
     decoding=async
     crossorigin=anonymous
-    src="https://google-kickstart-me.herokuapp.com/flier/<nickname>/thumbnail?ppl=<ppl>" />
+    src="https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>/thumbnail" />
 ```
 
 ### Usage
 TODO
 
 ```
-https://google-kickstart-me.herokuapp.com/flier/<nickname>?ppl=<ppl>[&link=<link>]
+https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>/thumbnail
 ```
 
 |Option      |Required|Default|Description|
 |------------|--------|-------|-----------|
 |`<nickname>`| x      |       |           |
-|`<ppl>`     | x      |       |           |
-|`<link>`    |        |       |           |
-|`<about>`   |        |       |           |
+|`<language>`| x      |       |           |
 
+Supported `<language>` values:
+```
+linux
+c
+cplusplus
+csharp
+clojure
+go
+groovy
+java
+javascript
+php
+python
+ruby
+rust
+scala
+swift
+typescript
+```
 
 ### Contributing
 TODO

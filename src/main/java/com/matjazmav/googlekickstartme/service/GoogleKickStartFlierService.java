@@ -1,10 +1,9 @@
 package com.matjazmav.googlekickstartme.service;
 
-import com.matjazmav.googlekickstartme.constant.ProgrammingLanguage;
-import com.matjazmav.googlekickstartme.dto.ChallengeResult;
-import com.matjazmav.googlekickstartme.dto.Flier;
-import com.matjazmav.googlekickstartme.dto.Score;
+import com.matjazmav.googlekickstartme.dto.*;
+import com.matjazmav.googlekickstartme.util.*;
 import lombok.val;
+import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -22,41 +21,45 @@ public class GoogleKickStartFlierService {
         this.gkss = gkss;
     }
 
-    public Flier getFlier(String nickname, ProgrammingLanguage primaryLanguage) throws IOException {
+    @Cacheable("GoogleKickStartFlierService.getFlier")
+    public Flier getFlier(String nickname, String language) throws IOException {
+
         val now = Instant.now().getEpochSecond() * 1000;
-
-        // get all Kick Start challenges as empty results
-        final Map<String, ChallengeResult> resultMap = gkss.getCompetitions().stream()
-                .flatMap(a -> a.getChallenges().stream().map(c -> new ChallengeResult(){{
-                    setChallengeId(c.getId());
-                    setTimestamp(c.getTimestamp());
-                }}))
-                .collect(Collectors.toMap(ChallengeResult::getChallengeId, Function.identity()));
-
-        val profile = gkss.getProfile(nickname);
-
-        // inject actual results where user participated
-        for (val challengeId : profile.getScores().stream().map(Score::getChallengeId).collect(Collectors.toList())) {
-            resultMap.put(challengeId, gkss.getResults(challengeId, nickname));
-        }
-
-        // get last 14 relative ranking
-        val rankings = resultMap.values().stream()
-                .filter(cr -> cr.getTimestamp() <= now)
-                .sorted((p1, p2) -> -Long.compare(p1.getTimestamp(), p2.getTimestamp()))
-                .limit(14)
-                .map(cr -> cr.getRankRelative())
+        val challengeIds = gkss.getKickStartSeries().getCompetitions().stream()
+                .flatMap(c -> c.getChallenges().stream())
+                .filter(c -> c.getTimestamp() <= now)
+                .sorted(Comparator.comparingLong(KickStartChallenge::getTimestamp))
+                .map(KickStartChallenge::getId)
                 .collect(Collectors.toList());
 
-        val totalScore = profile.getScores().stream().mapToInt(Score::getScore).sum();
+        val profile = gkss.getProfile(nickname);
+        val scoreMap = profile.getScores().stream()
+                .collect(Collectors.toMap(KickStartScore::getChallengeId, Function.identity()));
 
-        return new Flier(){{
-            setNickname(nickname);
-            setCountry(profile.getCountry());
-            setPrimaryProgrammingLanguage(primaryLanguage);
-            setLastRankings(rankings);
-            setTotalScore(totalScore);
-        }};
+        val scores = challengeIds.stream()
+                .map(cId -> scoreMap.containsKey(cId) ? scoreMap.get(cId).getScore() : 0)
+                .collect(Collectors.toList())
+                .toArray(new Integer[]{});
+
+        val cumulativeScores =  scores.clone();
+        Arrays.parallelPrefix(cumulativeScores, Integer::sum);
+
+        val totalScore = profile.getScores().stream().mapToInt(KickStartScore::getScore).sum();
+        val relativeCumulativeScores = Arrays.stream(cumulativeScores)
+                .map(s -> s == 0 ? 1 : s/(double)totalScore*100)
+                .collect(Collectors.toList())
+                .toArray(new Double[]{});
+
+        return new Flier(
+                nickname,
+                profile.getCountry(),
+                language,
+                scores,
+                relativeCumulativeScores,
+                totalScore,
+                CountryFlagImageMapper.get(profile.getCountry()),
+                LanguageImageMapper.get(language)
+        );
     }
 
 }

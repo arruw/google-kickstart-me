@@ -30,8 +30,16 @@ public class GoogleKickstartMeApplication {
 	@Scheduled(fixedDelay = 1000*60*60)
 	public void refreshCaches() {
 		try {
-			cacheManager.getCache("GoogleKickstartService.getCompetitions").clear();
-			gkss.getCompetitions();
-		} catch (IOException e) {}
+			cacheManager.getCache("GoogleKickstartService.getKickStartSeries").clear();
+			gkss.getKickStartSeries();
+		} catch (Exception e) {}
+	}
+
+	@Scheduled(fixedDelay = 1000*60*60)
+	public void clearCaches() {
+		try {
+			cacheManager.getCache("ThumbnailService.getThumbnail").clear();
+			cacheManager.getCache("GoogleKickStartFlierService.getFlier").clear();
+		} catch (Exception e) {}
 	}
 }

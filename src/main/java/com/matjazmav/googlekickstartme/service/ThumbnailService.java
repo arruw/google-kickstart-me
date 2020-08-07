@@ -1,31 +1,35 @@
 package com.matjazmav.googlekickstartme.service;
 
+import com.matjazmav.googlekickstartme.util.*;
 import lombok.val;
 import org.openqa.selenium.*;
+import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.function.Supplier;
 
 @Service
 public class ThumbnailService {
 
-    private final WebDriver webDriver;
+    private final WebDriverPool<WebDriver> webDriverPool;
 
-    public ThumbnailService(WebDriver webDriver) {
-        this.webDriver = webDriver;
+    public ThumbnailService(WebDriverPool<WebDriver> webDriverPool) {
+        this.webDriverPool = webDriverPool;
     }
 
-    public BufferedImage getThumbnail(String url) throws IOException {
-        webDriver.get(url);
+    @Cacheable("ThumbnailService.getThumbnail")
+    public BufferedImage getThumbnail(String url, By selector) throws Exception {
+        return webDriverPool.execute(webDriver -> {
+            webDriver.get(url);
+            val flierEl = webDriver.findElement(selector);
+            val fullImage = ImageIO.read(((TakesScreenshot)webDriver).getScreenshotAs(OutputType.FILE));
 
-        val flierEl = webDriver.findElement(By.className("flier"));
-
-        val fullImage = ImageIO.read(((TakesScreenshot)webDriver).getScreenshotAs(OutputType.FILE));
-
-        return cropElement(fullImage, flierEl);
+            return cropElement(fullImage, flierEl);
+        });
     }
 
     private static BufferedImage cropElement(final BufferedImage fullImage, final WebElement el) {

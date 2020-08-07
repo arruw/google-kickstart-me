@@ -1,15 +1,16 @@
 package com.matjazmav.googlekickstartme.dto;
 
-import com.matjazmav.googlekickstartme.constant.ProgrammingLanguage;
-import lombok.Data;
+import lombok.*;
 
-import java.util.List;
-
-@Data
+@Getter
+@RequiredArgsConstructor
 public class Flier {
-    private String nickname;
-    private String country;
-    private ProgrammingLanguage primaryProgrammingLanguage;
-    private List<Integer> lastRankings;
-    private int totalScore;
+    private final String nickname;
+    private final String country;
+    private final String language;
+    private final Integer[] scores;
+    private final Double[] relativeCumulativeScores;
+    private final int totalScore;
+    private final String countryFlagUrl;
+    private final String languageUrl;
 }
