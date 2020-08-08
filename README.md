@@ -1,23 +1,42 @@
-# Google Kick Start Badge
+# 🏆🏆🏆 Google Kick Start Badge 🏆🏆🏆
 
-Show your skills with an embeddable Google Kick Start badge.
+Show your problem solving skills with an embeddable Google Kick Start badge.
 Embed your badge on your blog, code repository, forum, email signature...
-You can use `<img>` or `<iframe>` HTML tag to do so.
 
-<a href="https://google-kickstart-me.herokuapp.com/flier/matjazmav/java"><img alt="Google Kick Start Badge" decoding=async crossorigin=anonymous src="https://google-kickstart-me.herokuapp.com/flier/matjazmav/java/thumbnail" /></a>
+[
+    ![Google Kick Start Badge](https://google-kickstart-me.herokuapp.com/flier/matjazmav/java/thumbnail)
+](https://google-kickstart-me.herokuapp.com/flier/matjazmav/java)
 
+**Note:** This web app is currently deployed on a [Heroku](https://www.heroku.com) free plan.
+Therefore, application goes to sleep after 30 minutes of inactivity, thus it is expected that there will be 
+some lag when application wakes up and possible some timeouts.
+**If there is interest, we can move it to paid plan or self host it.**
+
+### Usage
+
+**Markdown**
+```md
+[
+    ![Google Kick Start Badge](https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>/thumbnail)
+](https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>)
+```
+
+**HTML**
 ```html
 <a href="https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>">
     <img
         alt="Google Kick Start Badge"
-        decoding=async
-        crossorigin=anonymous
         src="https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>/thumbnail" />
 </a>
 ```
 
-### Usage
+```html
+<iframe
+    src="https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>"
+    alt="Google Kick Start Badge" />
+```
 
+**API Endpoints**
 ```
 https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>[/thumbnail]
 ```
