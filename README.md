@@ -5,7 +5,7 @@ Embed your badge on your blog, code repository, forum, email signature...
 
 [
     ![Google Kick Start Badge](https://google-kickstart-me.herokuapp.com/flier/matjazmav/java/thumbnail)
-](https://google-kickstart-me.herokuapp.com/flier/matjazmav/java)
+](https://google-kickstart-me.herokuapp.com/flier/matjazmav/java?link=https://www.linkedin.com/in/matjazmav/)
 
 **Note:** This web app is currently deployed on a [Heroku](https://www.heroku.com) free plan.
 Therefore, application goes to sleep after 30 minutes of inactivity, thus it is expected that there will be 
@@ -31,20 +31,23 @@ some lag when application wakes up and possible some timeouts.
 ```
 
 ```html
-<iframe
-    src="https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>"
-    alt="Google Kick Start Badge" />
+<iframe src="https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>" />
 ```
 
 **API Endpoints**
 ```
-https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>[/thumbnail]
+# HTML
+https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>[?link=<some-url>]
+
+# IMAGE
+https://google-kickstart-me.herokuapp.com/flier/<nickname>/<language>/thumbnail
 ```
 
 |Option      |Required|Default|Description|
 |------------|--------|-------|-----------|
 |`<nickname>`| x      |       |           |
 |`<language>`| x      |       |           |
+|`<some-url>`|        |       |           |
 
 Supported `<language>` values:
 ```

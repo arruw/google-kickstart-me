@@ -3,7 +3,7 @@ package com.matjazmav.googlekickstartme.util;
 import java.util.*;
 
 public class CountryFlagImageMapper {
-    private static final Map<String, String> COUNTRY_FLAG_IMAGE_MAP = new TreeMap<>(String.CASE_INSENSITIVE_ORDER){{
+    public static final Map<String, String> MAP = new TreeMap<>(String.CASE_INSENSITIVE_ORDER){{
         put("Afghanistan", f("AF"));
         put("Albania", f("AL"));
         put("Algeria", f("DZ"));
@@ -251,6 +251,6 @@ public class CountryFlagImageMapper {
     }
 
     public static String get(String country) {
-        return COUNTRY_FLAG_IMAGE_MAP.getOrDefault(country, "https://img.icons8.com/ios/26/000000/vertical-flag.png");
+        return MAP.getOrDefault(country, "https://img.icons8.com/ios/26/000000/vertical-flag.png");
     }
 }

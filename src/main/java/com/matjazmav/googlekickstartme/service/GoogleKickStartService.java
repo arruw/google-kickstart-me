@@ -2,10 +2,7 @@ package com.matjazmav.googlekickstartme.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.matjazmav.googlekickstartme.dto.*;
-import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.boot.web.client.*;
-import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.util.*;
@@ -15,21 +12,17 @@ import java.util.*;
 import java.util.stream.*;
 
 @Service
-@Slf4j
 public class GoogleKickStartService {
 
-    private static final String BASE_URL = "https://codejam.googleapis.com";
-
+    private final String baseUrl = "https://codejam.googleapis.com";
     private final ObjectMapper objectMapper;
     private final WebClient  webClient;
-    private final CacheManager cacheManager;
 
-    public GoogleKickStartService(ObjectMapper objectMapper, RestTemplateBuilder restTemplateBuilder, CacheManager cacheManager) {
+    public GoogleKickStartService(ObjectMapper objectMapper) {
         this.objectMapper = objectMapper;
-        this.cacheManager = cacheManager;
         this.webClient = WebClient
                 .builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(baseUrl)
                 .build();
     }
 

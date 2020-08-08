@@ -1,7 +1,7 @@
 package com.matjazmav.googlekickstartme.controller;
 
 import com.matjazmav.googlekickstartme.service.*;
-import lombok.val;
+import lombok.*;
 import org.openqa.selenium.*;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
@@ -10,28 +10,23 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.MvcUriComponentsBuilder;
 
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.concurrent.*;
 
 
 @Controller
-public class GoogleKickStartController {
+@RequiredArgsConstructor
+public class GoogleKickStartBadgeController {
 
-    private final GoogleKickStartFlierService flierService;
+    private final BadgeService badgeService;
     private final ThumbnailService thumbnailService;
 
     private static final CacheControl CACHE_CONTROL = CacheControl
             .maxAge(1, TimeUnit.HOURS)
             .cachePublic();
 
-    public GoogleKickStartController(GoogleKickStartFlierService flierService, ThumbnailService thumbnailService) {
-        this.flierService = flierService;
-        this.thumbnailService = thumbnailService;
-    }
-
     @ResponseBody
     @RequestMapping("/")
-    public ResponseEntity index() throws IOException {
+    public ResponseEntity<Void> index() {
         return ResponseEntity
                 .status(HttpStatus.MOVED_PERMANENTLY)
                 .header(HttpHeaders.LOCATION, "https://github.com/matjazmav/google-kickstart-me/blob/master/README.md")
@@ -39,8 +34,8 @@ public class GoogleKickStartController {
     }
 
     @GetMapping("/flier/{nickname}/{language}")
-    public String getFlier(@PathVariable String nickname, @PathVariable String language, @RequestParam(name="link", required = false) String link, Model model) throws IOException {
-        val flierData = flierService.getFlier(nickname, language);
+    public String getFlier(@PathVariable String nickname, @PathVariable String language, @RequestParam(name="link", required = false) String link, Model model) throws Exception {
+        val flierData = badgeService.getFlier(nickname, language);
         model.addAttribute("model", flierData);
         model.addAttribute("link", link != null ? link : "#");
         return "flier";

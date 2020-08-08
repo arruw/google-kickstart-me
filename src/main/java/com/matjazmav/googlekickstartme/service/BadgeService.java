@@ -2,7 +2,7 @@ package com.matjazmav.googlekickstartme.service;
 
 import com.matjazmav.googlekickstartme.dto.*;
 import com.matjazmav.googlekickstartme.util.*;
-import lombok.val;
+import lombok.*;
 import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
 
@@ -13,16 +13,13 @@ import java.util.function.Function;
 import java.util.stream.*;
 
 @Service
-public class GoogleKickStartFlierService {
+@RequiredArgsConstructor
+public class BadgeService {
 
     private final GoogleKickStartService gkss;
 
-    public GoogleKickStartFlierService(GoogleKickStartService gkss) {
-        this.gkss = gkss;
-    }
-
     @Cacheable("GoogleKickStartFlierService.getFlier")
-    public Flier getFlier(String nickname, String language) throws IOException {
+    public Badge getFlier(String nickname, String language) throws IOException {
 
         val now = Instant.now().getEpochSecond() * 1000;
         val challengeIds = gkss.getKickStartSeries().getCompetitions().stream()
@@ -50,7 +47,7 @@ public class GoogleKickStartFlierService {
                 .collect(Collectors.toList())
                 .toArray(new Double[]{});
 
-        return new Flier(
+        return new Badge(
                 nickname,
                 profile.getCountry(),
                 language,

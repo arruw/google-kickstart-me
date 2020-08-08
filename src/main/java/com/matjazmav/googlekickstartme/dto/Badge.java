@@ -4,7 +4,7 @@ import lombok.*;
 
 @Getter
 @RequiredArgsConstructor
-public class Flier {
+public class Badge {
     private final String nickname;
     private final String country;
     private final String language;

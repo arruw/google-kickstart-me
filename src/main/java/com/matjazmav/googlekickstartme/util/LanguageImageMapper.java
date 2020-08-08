@@ -3,32 +3,32 @@ package com.matjazmav.googlekickstartme.util;
 import java.util.*;
 
 public class LanguageImageMapper {
-    private static final Map<String, String> PROGRAMMING_LANGUAGE_IMAGE_MAP = new TreeMap<>(String.CASE_INSENSITIVE_ORDER){{
-        put("Bash", f("linux"));
-        put("C", f("c"));
-        put("Cpp", f("cplusplus"));
-        put("CS", f("csharp"));
-        put("Clojure", f("clojure"));
-        put("Go", f("go"));
-        put("Groovy", f("groovy"));
-        put("Java", f("java"));
-        put("JavaScript", f("javascript"));
-        put("PHP", f("php"));
-        put("Python2", f("python"));
-        put("Python3", f("python"));
-        put("PyPy2", f("python"));
-        put("Ruby", f("ruby"));
-        put("Rust", f("rust"));
-        put("Scala", f("scala"));
-        put("Swift", f("swift"));
-        put("TypeScript", f("typescript"));
+    public static final Map<String, String> MAP = new TreeMap<>(String.CASE_INSENSITIVE_ORDER){{
+        put("Bash", f("linux/linux-original"));
+        put("C", f("c/c-original"));
+        put("Cpp", f("cplusplus/cplusplus-original"));
+        put("CS", f("csharp/csharp-original"));
+        put("Clojure", f("clojure/clojure-original"));
+        put("Go", f("go/go-original"));
+        put("Groovy", f("groovy/groovy-original"));
+        put("Java", f("java/java-original"));
+        put("JavaScript", f("javascript/javascript-original"));
+        put("PHP", f("php/php-original"));
+        put("Python2", f("python/python-original"));
+        put("Python3", f("python/python-original"));
+        put("PyPy2", f("python/python-original"));
+        put("Ruby", f("ruby/ruby-original"));
+        put("Rust", f("rust/rust-plain"));
+        put("Scala", f("scala/scala-original"));
+        put("Swift", f("swift/swift-original"));
+        put("TypeScript", f("typescript/typescript-original"));
     }};
 
     private static String f(String token) {
-        return String.format("https://devicons.github.io/devicon/devicon.git/icons/%s/%s-original.svg", token, token);
+        return String.format("https://devicons.github.io/devicon/devicon.git/icons/%s.svg", token);
     }
 
     public static String get(String key) {
-        return PROGRAMMING_LANGUAGE_IMAGE_MAP.getOrDefault(key, null);
+        return MAP.getOrDefault(key, null);
     }
 }

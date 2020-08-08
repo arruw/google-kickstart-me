@@ -1,25 +1,19 @@
 package com.matjazmav.googlekickstartme.service;
 
 import com.matjazmav.googlekickstartme.util.*;
-import lombok.val;
+import lombok.*;
 import org.openqa.selenium.*;
 import org.springframework.cache.annotation.*;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Base64Utils;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.function.Supplier;
 
 @Service
+@RequiredArgsConstructor
 public class ThumbnailService {
 
     private final WebDriverPool<WebDriver> webDriverPool;
-
-    public ThumbnailService(WebDriverPool<WebDriver> webDriverPool) {
-        this.webDriverPool = webDriverPool;
-    }
 
     @Cacheable("ThumbnailService.getThumbnail")
     public BufferedImage getThumbnail(String url, By selector) throws Exception {
